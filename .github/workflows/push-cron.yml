@@ -21,9 +21,7 @@ jobs:
         run: npm install
 
       - name: Write Firebase credentials from secret
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > tmp.json
-          cat tmp.json | jq '.' > serviceAccountKey.json
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > serviceAccountKey.json
 
       - name: Run push script
         run: node send-push.js
