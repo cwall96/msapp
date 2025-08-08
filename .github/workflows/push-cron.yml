@@ -2,7 +2,7 @@ name: Daily Push Notification
 
 on:
   schedule:
-    - cron: '0 17 * * *' # 6PM UK time (UTC+1 is 17:00 UTC)
+    - cron: '0 12 * * *' # 6PM UK time (UTC+1 is 17:00 UTC)
   workflow_dispatch:      # lets you run it manually from GitHub
 
 jobs:
