@@ -1,38 +1,45 @@
-// send-push.js
-import fetch from 'node-fetch';
-import { initializeApp, applicationDefault } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+// send-push.js (CommonJS version)
+const fetch = require('node-fetch');
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+const serviceAccount = require('./serviceAccountKey.json');
 
-initializeApp({ credential: applicationDefault() });
+initializeApp({
+  credential: cert(serviceAccount)
+});
+
 const db = getFirestore();
 
-const sendNotification = async (token, message) => {
-  const res = await fetch('https://exp.host/--/api/v2/push/send', {
+const sendPushNotification = async (expoPushToken, message) => {
+  const response = await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'Accept-Encoding': 'gzip, deflate',
+      'Accept-encoding': 'gzip, deflate',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      to: token,
+      to: expoPushToken,
       sound: 'default',
-      title: 'Ms Symptom Check Reminder',
+      title: 'Hello from CuePD',
       body: message,
     }),
   });
-  const data = await res.json();
-  console.log(data);
+
+  const data = await response.json();
+  console.log('✅ Sent:', data);
 };
 
-const run = async () => {
+(async () => {
   const snapshot = await db.collection('pushTokens').get();
-  for (const doc of snapshot.docs) {
-    const { token } = doc.data();
-    if (token?.startsWith('ExponentPushToken')) {
-      await sendNotification(token, 'Time to complete your daily CuePD check-in!');
-    }
-  }
-};
 
-run();
+  if (snapshot.empty) {
+    console.log('No tokens found');
+    return;
+  }
+
+  snapshot.forEach(doc => {
+    const token = doc.data().token;
+    sendPushNotification(token, 'Scheduled message from CuePD');
+  });
+})();
