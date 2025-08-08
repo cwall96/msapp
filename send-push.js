@@ -21,7 +21,7 @@ const sendPushNotification = async (expoPushToken, message) => {
     body: JSON.stringify({
       to: expoPushToken,
       sound: 'default',
-      title: 'Hello from CuePD',
+      title: 'MSTracker',
       body: message,
     }),
   });
@@ -40,6 +40,6 @@ const sendPushNotification = async (expoPushToken, message) => {
 
   snapshot.forEach(doc => {
     const token = doc.data().token;
-    sendPushNotification(token, 'Scheduled message from CuePD');
+    sendPushNotification(token, 'Please make sure you fill out your daily symptoms!');
   });
 })();
