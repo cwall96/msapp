@@ -1,0 +1,27 @@
+name: Daily Push Notification
+
+on:
+  schedule:
+    - cron: '0 17 * * *' # 6PM UK time (UTC+1 is 17:00 UTC)
+  workflow_dispatch:      # lets you run it manually from GitHub
+
+jobs:
+  send-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Write Firebase credentials from secret
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > serviceAccountKey.json
+
+      - name: Run push script
+        run: node send-push.js
